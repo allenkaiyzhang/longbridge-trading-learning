@@ -1,0 +1,3 @@
+longport
+python-dotenv
+openai
