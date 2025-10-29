@@ -1,8 +1,11 @@
 import os
 import csv
+import argparse
+from pathlib import Path
 from datetime import datetime
 from longport.openapi import Config, QuoteContext
 from deepseek_analysis import analyze_quote
+from utils_symbols import read_symbols
 
 
 def main():
@@ -10,7 +13,8 @@ def main():
     Fetch real-time quotes via LongPort, run DeepSeek analysis with suggestions,
     and save results to a text file while updating an index CSV.
 
-    Symbols are read from the SYMBOLS environment variable (comma-separated).
+    Symbols are read from a CSV file (config/symbols.csv by default). You can override the path with the --symbols-csv argument.
+
     The DeepSeek API key and optional base URL should be set via environment variables
     (DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL). The output directory can be set with OUTPUT_DIR;
     defaults to the current directory. An optional extra prompt for the DeepSeek model can be set
@@ -20,13 +24,19 @@ def main():
     cfg = Config.from_env()
     ctx = QuoteContext(cfg)
 
-    # Parse symbols from environment
-    symbols_env = os.environ.get("SYMBOLS", "")
-    symbols = [s.strip().upper() for s in symbols_env.split(",") if s.strip()]
+    # Parse arguments for symbols CSV
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--symbols-csv",
+        default="config/symbols.csv",
+        help="Path to CSV file with a header 'symbol' listing tickers",
+    )
+    args = parser.parse_args()
+
+    symbols_csv = Path(args.symbols_csv)
+    symbols = read_symbols(symbols_csv)
     if not symbols:
-        raise RuntimeError(
-            "No symbols specified in SYMBOLS environment variable. Example: '700.HK,AAPL.US'"
-        )
+        raise RuntimeError(f"No symbols found in {symbols_csv}")
 
     # Fetch quotes
     quotes = ctx.quote(symbols)
@@ -86,6 +96,7 @@ def main():
         print(f"{item['symbol']}: price={item['price']}")
         print(item["analysis"])
         print("-" * 40)
+
 
 if __name__ == "__main__":
     main()
