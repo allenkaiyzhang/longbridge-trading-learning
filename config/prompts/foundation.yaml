@@ -1,0 +1,14 @@
+meta:
+  id: foundation
+  version: "1.0.0"
+  owner: "system"
+  updated: "2025-10-31"
+system: |
+  - 统一输出格式与术语
+  - 时区 Asia/Singapore
+  - 禁止测露密钥/敏感信息
+policies:
+  format: markdown
+  max_tokens: 1200
+  bilingual: false
+  severity_on_error: warn
