@@ -44,7 +44,6 @@ This document explains how to deploy the realtime quotes script on an Alibaba Cl
    LONGPORT_APP_KEY=your_app_key
    LONGPORT_APP_SECRET=your_app_secret
    LONGPORT_ACCESS_TOKEN=your_access_token
-   SYMBOLS=700.HK,AAPL.US
    # Optional: override API endpoints for test environment
    # LONGPORT_HTTP_URL=
    # LONGPORT_QUOTE_WS_URL=
