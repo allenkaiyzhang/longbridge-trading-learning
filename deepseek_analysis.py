@@ -1,14 +1,13 @@
 import os
 from openai import OpenAI
-from datetime import datetime
-from zoneinfo import ZoneInfo
+import argparse
 
 # Base URL for the DeepSeek API. Can be overridden by setting DEEPSEEK_BASE_URL.
 BASE_URL = os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com")
 API_KEY = os.getenv("DEEPSEEK_API_KEY")
 
 
-def analyze_quote(prompt) -> str:
+def analyze_quote(symbol: str, price: float, extra_prompt: str | None = None) -> str:
     """
     Analyze a real-time quote using DeepSeek API.
 
@@ -25,7 +24,14 @@ def analyze_quote(prompt) -> str:
 
     # Initialize OpenAI client pointing to the DeepSeek endpoint.
     client = OpenAI(api_key=API_KEY, base_url=BASE_URL)
-    user_message = "\n".join(prompt)
+
+    # Construct the user message for analysis.
+    prompt_parts = [
+        f"You are a professional stock analyst. Provide a concise analysis of the current market condition for {symbol} at price {price}.",
+    ]
+    if extra_prompt:
+        prompt_parts.append(extra_prompt)
+    user_message = "\n".join(prompt_parts)
 
     messages = [
         {"role": "user", "content": user_message}
@@ -59,4 +65,16 @@ if __name__ == "__main__":
     Example:
         python deepseek_analysis.py 700.HK 50.0
     """
-    import sys
+    parser = argparse.ArgumentParser(description="DeepSeek quote analysis")
+    parser.add_argument("symbol", nargs="?", default=os.getenv("QUOTE_SYMBOL", "700.HK"), help="Stock symbol")
+    parser.add_argument("price", nargs="?", type=float, default=float(os.getenv("QUOTE_PRICE", "0.0")), help="Latest price")
+    # Add optional parameters for future prompt support
+    parser.add_argument("--prompt-module", dest="prompt_module", default=None, help="Prompt module name (optional)")
+    parser.add_argument("--scenario", dest="scenario", default=None, help="Scenario name (optional)")
+    args = parser.parse_args()
+
+    symbol = args.symbol
+    price = args.price
+    # Note: prompt_module and scenario are parsed but not used in this script
+    analysis = analyze_quote(symbol, price)
+    print(analysis)
