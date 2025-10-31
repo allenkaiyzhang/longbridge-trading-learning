@@ -5,6 +5,6 @@ meta:
   updated: "2025-10-31"
 system: |
   - 输出需包含：结论 / 亮点 / 风险
-      - 遵循既定指标口径与评价框架
+        - 遵循既定指标口径与评价框架
 policies:
   format: markdown
