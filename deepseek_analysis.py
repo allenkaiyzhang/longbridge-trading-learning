@@ -1,12 +1,14 @@
 import os
 from openai import OpenAI
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 # Base URL for the DeepSeek API. Can be overridden by setting DEEPSEEK_BASE_URL.
 BASE_URL = os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com")
 API_KEY = os.getenv("DEEPSEEK_API_KEY")
 
 
-def analyze_quote(symbol: str, price: float, extra_prompt: str | None = None) -> str:
+def analyze_quote(prompt) -> str:
     """
     Analyze a real-time quote using DeepSeek API.
 
@@ -23,14 +25,7 @@ def analyze_quote(symbol: str, price: float, extra_prompt: str | None = None) ->
 
     # Initialize OpenAI client pointing to the DeepSeek endpoint.
     client = OpenAI(api_key=API_KEY, base_url=BASE_URL)
-
-    # Construct the user message for analysis.
-    prompt_parts = [
-        f"You are a professional stock analyst. Provide a concise analysis of the current market condition for {symbol} at price {price}.",
-    ]
-    if extra_prompt:
-        prompt_parts.append(extra_prompt)
-    user_message = "\n".join(prompt_parts)
+    user_message = "\n".join(prompt)
 
     messages = [
         {"role": "user", "content": user_message}
@@ -65,13 +60,3 @@ if __name__ == "__main__":
         python deepseek_analysis.py 700.HK 50.0
     """
     import sys
-
-    symbol = sys.argv[1] if len(sys.argv) > 1 else os.getenv("QUOTE_SYMBOL", "700.HK")
-    price_str = sys.argv[2] if len(sys.argv) > 2 else os.getenv("QUOTE_PRICE", "0.0")
-    try:
-        price = float(price_str)
-    except ValueError:
-        price = 0.0
-
-    analysis = analyze_quote(symbol, price)
-    print(analysis)

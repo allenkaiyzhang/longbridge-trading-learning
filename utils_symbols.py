@@ -67,3 +67,4 @@ def read_symbols(csv_path: str | Path) -> List[str]:
     if not out:
         raise ValueError("No valid symbols in CSV")
     return out
+

@@ -24,13 +24,13 @@ KEY_MAP = {
     "stock_derivatives": "可提供的衍生品行情类型",
     "board": "标的所属板块"
 }
-savedList=["02388.HK","5.HK","HSBC.US","BABA.US"]
+
 
 #获取response
-def getResponse(savedList):
+def getBasicStatus(symbol):
     config = Config.from_env()
     ctx = QuoteContext(config)
-    resp = ctx.static_info(savedList)
+    resp = ctx.static_info(symbol)
     return resp
 
 #强制转换各个response内容为dict类型
@@ -92,10 +92,12 @@ def translate_keys(data):
     else:
         return data
 
+def getPrompt(symbol):
+    response=getBasicStatus(savedList)
+    details=getStockDetails(response)
+    return details
+
 
 # 验证 & 漂亮打印（避免中文变 \uXXXX）
-response=getResponse(savedList)
-details=getStockDetails(response)
-for i in details:
-    for j in i.items():
-        print(j)
+response=getBasicStatus(["US.HSBC"])
+

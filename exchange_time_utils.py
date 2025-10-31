@@ -9,7 +9,7 @@ fields alongside common financial metrics.
 The primary motivation for these utilities is to allow downstream models (such
 as DeepSeek) to learn about temporal context differences between exchanges.
 
-Example usage:
+Example usage: 
 
     from exchange_time_utils import add_exchange_time_fields, generate_deepseek_prompt
 
